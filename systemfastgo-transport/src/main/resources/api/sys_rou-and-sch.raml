@@ -1,0 +1,37 @@
+#%RAML 1.0
+title: Sys_rou and sch
+/{transportType}:
+  /{transportCompany}:
+    /routes:
+      get:
+        headers:
+          transactionId:
+            type: string
+            required: true
+        responses:
+          200:
+            body:
+              application/json:
+                example: !include /SYS_sch/rou.raml
+    /schedules:
+      get:
+        headers:
+          transactionid:
+            type: string
+            required: true
+        queryParameters:
+          departurelocationcode:
+            type: string
+            required: false
+          destinationlocationcode:
+            type: string
+            required: false
+        responses:
+          200:
+            body:
+              application/json:
+                example: !include /SYS_sch/Sch.raml
+                  
+        
+          
+            

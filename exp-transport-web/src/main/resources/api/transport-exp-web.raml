@@ -1,0 +1,49 @@
+#%RAML 1.0
+title: Transport-exp-web
+/bookings:
+  /{transportType}:
+    /routes:
+     get:
+      headers:
+        transactionId : 
+          type: string
+          required: true 
+      queryParameters:  
+        companyName:
+          type: string
+          required: false    
+        departureLocation:
+          type: string
+          required: false
+        destinationLocation:
+          type: string
+          required: false
+      responses:
+       200:
+        body:
+          application/json:
+              example: !include /exp-web/rou-web.raml
+    /schedules:
+     get:
+      headers:
+       transactionId : 
+          type: string
+          required: true
+      queryParameters:
+        companyName:
+          type: string
+          required: false    
+        departureLocation:
+          type: string
+          required: false
+        destinationLocation:
+          type: string
+          required: false
+        requestTimeZone:
+          type: string
+          required: false
+      responses:
+       200:
+        body:
+          application/json:
+            example: !include /exp-web/sche-web.raml

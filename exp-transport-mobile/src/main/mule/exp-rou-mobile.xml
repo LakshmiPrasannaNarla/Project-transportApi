@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="e5387ef9-df27-4386-929e-c4b0826dba85" >
+		<http:request-connection host="localhost" port="8089" />
+	</http:request-config>
+	<flow name="exp-rou-mobileFlow" doc:id="f7bb7f59-9f84-41a9-a7fb-8ee969e7af39" >
+		<http:request method="GET" doc:name="Request" doc:id="d91efec2-a0dc-428d-b324-334f4c414828" path="/api/{transportType}/routes" config-ref="HTTP_Request_configuration1">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"transactionid" : attributes.queryParams.transactionid
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[{
+	"transportType": attributes.uriParams.transportType,
+	"transportCompany" : attributes.queryParams.companycode default "travelontrip"
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"departurelocationcode" : attributes.queryParams.departurelocationcode,
+	"destinationlocationcode" : attributes.queryParams.destinationlocationcode
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="7e4cb0d2-e64e-4551-9922-4e56cdd17660" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

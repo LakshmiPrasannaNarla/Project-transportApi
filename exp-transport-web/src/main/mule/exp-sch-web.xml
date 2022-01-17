@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="81529524-c5a8-4e62-aa0a-a5827cd3f252" >
+		<http:request-connection host="localhost" port="8089" />
+	</http:request-config>
+	<flow name="exp-sch-webFlow" doc:id="2ff0093d-360b-4123-82d3-52c3d23ce8ff" >
+		<http:request method="GET" doc:name="Request" doc:id="7554f0eb-db84-488c-b74b-139bb8e8337e" path="/api/{transportType}/schedules" config-ref="HTTP_Request_configuration1">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"transactionid" : attributes.headers.transactionid
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[{
+	"transportType": attributes.uriParams.transportType,
+	"transportCompany" : attributes.queryParams.companycode
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"departurelocationcode" : attributes.queryParams.departurelocationcode,
+	"destinationlocationcode" : attributes.queryParams.destinationlocationcode
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="50a882de-e951-4572-b653-39f72cc2ddf2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
